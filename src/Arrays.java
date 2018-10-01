@@ -9,11 +9,13 @@ public class Arrays {
 		// TODO Auto-generated method stub
 		
 		//Q1
+		System.out.println("All unique characters?");
 		System.out.println(isUniqueChars("gabrielle"));  //false
 		System.out.println(isUniqueChars("abcdefg"));  //true
 		System.out.println();
 		
 		//Q2
+		System.out.println("Permutation:");
 		System.out.println(permutation1("Gab", "bag"));  //false
 		System.out.println(permutation1("gab", "bag"));  //true
 		System.out.println(permutation1("gab", "bag "));  //false
@@ -24,9 +26,26 @@ public class Arrays {
 		//when you feel like it, write a way to call the method and get a result
 		
 		//Q4
+		System.out.println("Permutation of palindrome:");
 		System.out.println(isPermutationOfPalindrome("wobbly jogger passerby")); //false
 		System.out.println(isPermutationOfPalindrome("aabbccddeeffgg")); //true
 		System.out.println();
+		
+		//Q5
+		System.out.println("One away:");
+		System.out.println(oneEditAway("rare", "rarer")); //true
+		System.out.println(oneEditAway("rare", "rar")); //true
+		System.out.println(oneEditAway("rare", "rore")); //true
+		System.out.println(oneEditAway("rare", "pink")); //false
+		System.out.println();
+		
+		//Q6
+		System.out.println("Compress string:");
+		System.out.println(compressFirst("aaabbbccdddd")); //a3b3c2d4
+		System.out.println(compressFirst("abcdefg")); //abcdefg (because it will get longer if we "compress")
+		System.out.println(compressWithSB("aaabbbccdddd")); //a3b3c2d4
+		System.out.println(compressWithSB("abcdefg")); //abcdefg (because it will get longer if we "compress")
+
 
 	}
 	
@@ -201,7 +220,7 @@ public class Arrays {
 	///////////////////////////////////////////////////////////////////////////////////////////
 
 	
-	//Q5: "One away" is one string just one alteration away from being another string?
+	//Q5: "One away": Is one string just one alteration away from being another string?
 	//ie, will inserting or removing or changing a character make one string into the other string?
 	
 	//the inefficient way would be to compare the second string with every permutation of
@@ -209,5 +228,104 @@ public class Arrays {
 	
 	//tip for thinking about it: in all 3 ways, the strings are different by only one.
 	//either outright one thing is different, or two string are the same but shifted by one.
+	
+	//checking if lengths are the same or differ by only one:
+	//if so, sends the strings to the next method
+	public static boolean oneEditAway(String first, String second) {
+		if(first.length() == second.length()) {
+			return oneEditReplace(first, second);
+		}
+		else if(first.length() +1 == second.length()) {
+			return oneEditInsert(first, second);
+		}
+		else if(first.length() -1 == second.length()) {
+			return oneEditInsert(second, first);
+			//see how that will save us writing?
+			//it's the same method for insert or delete
+			//with the arguments reversed.
+		}
+		return false;
+	}
+	
+	//if strings are same length:
+	public static boolean oneEditReplace(String s1, String s2) {
+		boolean foundDifference = false;
+		for (int i = 0; i < s1.length(); i++) {
+			if (s1.charAt(i) != s2.charAt(i)) {
+				if(foundDifference) {
+					return false;
+				}
+				foundDifference = true;
+			}
+		}
+		return true;
+	}
+	
+	//can inserting one character make s1 one away from s2?
+	public static boolean oneEditInsert(String s1, String s2) {
+		int index1 = 0;
+		int index2 = 0;
+		while (index2 < s2.length() && index1 < s1.length()) {
+			if (s1.charAt(index1) != s2.charAt(index2)) {
+				if (index1 != index2) {
+					return false;
+				}
+				index2++;
+			}
+			else {
+				index1++;
+				index2++;
+			}
+		}
+		return true;
+	}
+	
+	//those two "oneEditX" methods can be merged into one
+	//maybe try it sometime when you want to tinker.
+	
+	///////////////////////////////////////////////////////////////////////////////////////////
+
+	
+	//Q6: Compress a string using counts of repeating chars
+	//Ie: aaabbccccdddd --> a3b2c4c4
+	
+	//Tips: The logic is pretty straightforward, but there are multiple
+	//ways to do it, and change O.
+	
+	//one way, if you don't know StringBuilder. This is slow because string concat is slow.
+	public static String compressFirst(String str) {
+		String compressedString = ""; //this is where the counted chars go
+		int countConsecutive = 0;
+		for (int i = 0; i < str.length(); i++) {
+			countConsecutive++; //this will always rise to at least one per letter
+			
+			//check if next letter if new. if so, add last letter and its number to end of new string
+			if (i + 1 >= str.length() || str.charAt(i) != str.charAt(i + 1)) {
+				compressedString += "" + str.charAt(i) + countConsecutive;
+				countConsecutive = 0; //resets char counter
+			}
+		}
+		return compressedString.length() < str.length() ? compressedString : str;
+	}
+	
+	//another way, using StringBuilder.
+	public static String compressWithSB(String str) {
+		StringBuilder compressed = new StringBuilder(); //create new SB instead of new string
+		int countConsecutive = 0;
+		for (int i = 0; i < str.length(); i++) {
+			countConsecutive++;
+			
+			//check if next letter if new. if so, add last letter and its number to end of new string
+			//works much like last one, except building the string with SB
+			//instead of concat'ing the new string with each new part bit
+			if (i + 1 >= str.length() || str.charAt(i) != str.charAt(i + 1)) {
+				compressed.append(str.charAt(i));
+				compressed.append(countConsecutive);
+				countConsecutive = 0;
+			}
+		}
+		return compressed.length() < str.length() ? compressed.toString() : str;
+		//gab -- look up the syntax in this line, you've forgotten it.
+	}
 	
 }
