@@ -1,4 +1,5 @@
 //practice and notes for coding interview questions
+//topic: arrays and hash tables
 //main only calls the methods
 //see each method for the question and the notes
 
@@ -10,16 +11,22 @@ public class Arrays {
 		//Q1
 		System.out.println(isUniqueChars("gabrielle"));  //false
 		System.out.println(isUniqueChars("abcdefg"));  //true
+		System.out.println();
 		
 		//Q2
 		System.out.println(permutation1("Gab", "bag"));  //false
 		System.out.println(permutation1("gab", "bag"));  //true
 		System.out.println(permutation1("gab", "bag "));  //false
+		System.out.println();
+
 		
 		//Q3
 		//when you feel like it, write a way to call the method and get a result
 		
 		//Q4
+		System.out.println(isPermutationOfPalindrome("wobbly jogger passerby")); //false
+		System.out.println(isPermutationOfPalindrome("aabbccddeeffgg")); //true
+		System.out.println();
 
 	}
 	
@@ -46,6 +53,7 @@ public class Arrays {
 		return true;
 	}
 	
+	///////////////////////////////////////////////////////////////////////////////////////////
 	
 	//Q2: Is one string a permutation of another?
 	
@@ -57,6 +65,7 @@ public class Arrays {
 	//(2) RE-READ THIS IN YOUR TEXTBOOK because you don't understand it.
 	
 	//solution 1:
+	
 	static String sort1(String s) {
 		char[] content = s.toCharArray();
 		java.util.Arrays.sort(content);
@@ -73,6 +82,8 @@ public class Arrays {
 	//solution 2:
 	//TO DO
 	
+	///////////////////////////////////////////////////////////////////////////////////////////
+
 	
 	//Q3: URLify: replace all spaces in a string with "%20"
 	
@@ -122,15 +133,81 @@ public class Arrays {
 		}
 	}
 	
+	///////////////////////////////////////////////////////////////////////////////////////////
+
 	
 	//Q4 check whether a string is a permutation of a palindrome
 	
 	//tips: understand both of those terms.
 	//palindrome: contains pairs of matching letters (with possibly ONE nonmatch)
 	//inefficient: creating all possible permutations and checking if palindromes. don't do it.
+	//hash table: imagine you had to count a whole paragraph's worth of letters
+	//you'd do something like write all the letters then make hashmarks for each instance.
+	//that's basically what it is.
 	
 	//solution 1:
 	
+	//build the hash table:
+	public static boolean isPermutationOfPalindrome(String phrase) {
+		int table[] = buildCharFrequencyTable(phrase);
+		return checkMaxOneOdd(table);
+	}
 	
+	//this checks that zero or one chars have an odd count
+	//it allows for up to one instance of %2 == 1 to be true
+	public static boolean checkMaxOneOdd(int[] table) {
+		boolean foundOdd = false;
+		for (int count: table) {
+			if (count % 2 == 1) {
+				if (foundOdd) {
+					return false;
+				}
+				foundOdd=true;
+			}
+		}
+		return true;
+	}
+	
+	//this maps each character to a number; (ie, a is 0, b is 1)
+	//-1 means a non-letter character
+	//Character.getNumbericValue is a java method that knows what to do.
+	public static int getCharNumber(Character c) {
+		int a = Character.getNumericValue('a');
+		int z = Character.getNumericValue('z');
+		int val = Character.getNumericValue(c);
+		
+		if (a <=val && val <= z) {
+			return val - a;
+		}
+		return -1;
+	}
+	
+	//count how many times each character appears
+	//basically, it loops through each char in the table and ++ each time
+	public static int[] buildCharFrequencyTable(String phrase) {
+		int[] table = new int[Character.getNumericValue('z') - Character.getNumericValue('a') +1];
+		for (char c: phrase.toCharArray()) {
+			int x = getCharNumber(c);
+			if (x != -1) {
+				table[x]++;
+			}
+		}
+		return table;
+	}
+	
+	//solution 2 is not much different but more efficient
+	//solution 3 involves bitvectors, which I'm gonna skip for a while
+	
+	///////////////////////////////////////////////////////////////////////////////////////////
+
+	
+	//Q5: "One away" is one string just one alteration away from being another string?
+	//ie, will inserting or removing or changing a character make one string into the other string?
+	
+	//the inefficient way would be to compare the second string with every permutation of
+	//inserting, removing or replacing in the first string. too long. don't do it.
+	
+	//tip for thinking about it: in all 3 ways, the strings are different by only one.
+	//either outright one thing is different, or two string are the same but shifted by one.
 	
 }
